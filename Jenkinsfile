@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                 echo 'Starting Build'
-                    sh "mvn clean test package"
+                    sh './gradlew clean build'
                 }
             }
         }
