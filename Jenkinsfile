@@ -14,7 +14,7 @@ pipeline {
     stage('Check Tomcat / Build') {
       steps {
         parallel(
-          a: {
+
            script {
                           def apiUrl = 'http://localhost:8085/application/public/api/getAllArt'
 
@@ -35,7 +35,7 @@ pipeline {
 
                                        }
                                    }
-          },
+          ,
           b: {
            script {
                            echo 'Starting Build'
