@@ -11,40 +11,40 @@ pipeline {
                 checkout scm
             }
         }
-
-        stage('Checking Tomcat') {
-         steps {
+    stage('Check Tomcat / Build') {
+      steps {
+        parallel(
+          a: {
            script {
-               def apiUrl = 'http://localhost:8085/application/public/api/getAllArt'
+                          def apiUrl = 'http://localhost:8085/application/public/api/getAllArt'
 
-               def response = sh(script: "curl -sS ${apiUrl}", returnStatus: true)
+                          def response = sh(script: "curl -sS ${apiUrl}", returnStatus: true)
 
-               if (response == 0) {
-                   echo "API Endpoint ${apiUrl} returned a successful response."
-               } else {
-                   echo "Tomcat not started."
+                          if (response == 0) {
+                              echo "API Endpoint ${apiUrl} returned a successful response."
+                          } else {
+                              echo "Tomcat not started."
 
-                     try {
-                       mail to: 'Tomciiart@gmail.com',
-                       subject: "Jenkins Job ${env.JOB_NAME} - Tomcat Server Not Running",
-                       body: "The Tomcat Server is not up and running. \n\nCheck the build at ${env.BUILD_URL}"
-                         } catch(Exception e) {
-                               echo 'Could not send out mail'
-                               }
+                                try {
+                                  mail to: 'Tomciiart@gmail.com',
+                                  subject: "Jenkins Job ${env.JOB_NAME} - Tomcat Server Not Running",
+                                  body: "The Tomcat Server is not up and running. \n\nCheck the build at ${env.BUILD_URL}"
+                                    } catch(Exception e) {
+                                          echo 'Could not send out mail'
+                                          }
 
-                            }
-                        }
-                    }
-            }
-
-        stage('Build') {
-            steps {
-                script {
-                echo 'Starting Build'
-                    sh './gradlew clean build --build-cache'
-                }
-            }
-        }
+                                       }
+                                   }
+          },
+          b: {
+           script {
+                           echo 'Starting Build'
+                               sh './gradlew clean build --build-cache'
+                           }
+          }
+        )
+      }
+    }
 
          stage('Send Mail') {
             steps {
