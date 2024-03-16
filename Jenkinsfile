@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                 echo 'Starting Build'
-                    sh './gradlew clean build'
+                    sh './gradlew clean build --build-cache'
                 }
             }
         }
